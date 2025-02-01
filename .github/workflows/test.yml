@@ -27,9 +27,9 @@ jobs:
         shell: bash
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            Xvfb :99 -screen 0 1024x768x24 &
+            Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
             sleep 5
-            xauth generate :99 . trusted
+            xauth generate :99 . trusted > /dev/null 2>&1
             go test -v ./...
           else
             go test -v ./...
