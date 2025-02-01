@@ -21,8 +21,9 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libx11-dev xvfb
 
       - name: Run tests
+        shell: bash
         run: |
-          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
             xvfb-run go test -v ./...
           else
             go test -v ./...

@@ -7,11 +7,17 @@ package displayindex
 #include <CoreGraphics/CoreGraphics.h>
 */
 import "C"
-
 import "fmt"
 
-func GetCursorPosition() (x, y int, err error) {
-	event := C.CGEventCreate(nil)
+func getCursorPosition() (x, y int, err error) {
+	// Create event source first
+	source := C.CGEventSourceCreate(C.kCGEventSourceStateHIDSystemState)
+	if source == nil {
+		return 0, 0, fmt.Errorf("CGEventSourceCreate failed")
+	}
+	defer C.CFRelease(C.CFTypeRef(source))
+
+	event := C.CGEventCreate(source)
 	if event == nil {
 		return 0, 0, fmt.Errorf("CGEventCreate failed")
 	}
