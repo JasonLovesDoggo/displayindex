@@ -3,26 +3,29 @@
 package displayindex
 
 /*
-#cgo darwin LDFLAGS: -framework CoreGraphics
-#include <CoreGraphics/CoreGraphics.h>
+#cgo darwin LDFLAGS: -framework Cocoa
+#import <Cocoa/Cocoa.h>
+
+int getDisplayIndex() {
+    NSPoint mouseLoc = [NSEvent mouseLocation];
+    NSArray *screens = [NSScreen screens];
+
+    for (NSUInteger i = 0; i < [screens count]; i++) {
+        NSRect frame = [[screens objectAtIndex:i] frame];
+        if (NSMouseInRect(mouseLoc, frame, NO)) {
+            return (int)i;
+        }
+    }
+    return -1;
+}
 */
 import "C"
 import "fmt"
 
-func getCursorPosition() (x, y int, err error) {
-	// Create event source first
-	source := C.CGEventSourceCreate(C.kCGEventSourceStateHIDSystemState)
-	if source == nil {
-		return 0, 0, fmt.Errorf("CGEventSourceCreate failed")
+func CurrentDisplayIndex() (int, error) {
+	index := C.getDisplayIndex()
+	if index == -1 {
+		return -1, fmt.Errorf("cursor not on any active display")
 	}
-	defer C.CFRelease(C.CFTypeRef(source))
-
-	event := C.CGEventCreate(source)
-	if event == nil {
-		return 0, 0, fmt.Errorf("CGEventCreate failed")
-	}
-	defer C.CFRelease(C.CFTypeRef(event))
-
-	point := C.CGEventGetLocation(event)
-	return int(point.x), int(point.y), nil
+	return int(index), nil
 }

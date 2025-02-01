@@ -1,3 +1,5 @@
+//go:build windows || linux
+
 package displayindex
 
 import (
@@ -5,7 +7,7 @@ import (
 	"github.com/kbinani/screenshot"
 )
 
-// Returns the display index containing the cursor (0-based)
+// CurrentDisplayIndex returns the display index containing the cursor (0-based)
 // Returns -1 and error if cursor not found on any display
 func CurrentDisplayIndex() (int, error) {
 	x, y, err := getCursorPosition()
