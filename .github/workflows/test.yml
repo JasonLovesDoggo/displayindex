@@ -16,15 +16,20 @@ jobs:
         with:
           go-version: '1.21'
 
-      - name: Install X11 dependencies (Linux)
+      - name: Linux Xvfb setup
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update && sudo apt-get install -y libx11-dev xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev xvfb
+          echo "DISPLAY=:99" >> $GITHUB_ENV
 
       - name: Run tests
         shell: bash
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            xvfb-run go test -v ./...
+            Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+            sleep 5  # Allow Xvfb to start
+            go test -v ./...
           else
             go test -v ./...
           fi
